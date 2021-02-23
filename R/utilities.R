@@ -108,7 +108,7 @@ format_coords <- function(sf_obj, geom_type) {
 #' get_sf_crs(iceland)
 get_sf_crs <- function(sf_obj) {
   stopifnot("sf" %in% class(sf_obj))
-  out_crs <- as.numeric(gsub("^[A-Z]{4}:", "",sf::st_crs(sf_obj)[[1]]))
+  out_crs <- as.numeric(gsub(".*([0-9]{4})$", "\\1",sf::st_crs(sf_obj)[[1]]))
   return(out_crs)
 }
 
@@ -189,12 +189,14 @@ sf_polygon <- function(..., crs = 4326) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' wbics <- sql_where(WATERBODY_WBIC = c(805400, 804600), rel_op = "IN")
 #' base_wdnr_url <- "https://dnrmaps.wi.gov/arcgis/rest/services/"
 #' hydro_path <- "WT_SWDV/WT_Inland_Water_Resources_WTM_Ext_v2/MapServer/3"
 #' hydro_url <- paste0(base_wdnr_url, hydro_path)
 #' lakes <- get_spatial_layer(url = hydro_url, where = wbics)
 #' plot_layer(lakes)
+#' }
 sql_where <- function(..., rel_op = "=") {
   args <- list(...)
   if (is.null(names(args)) | any(names(args) == "")) {
