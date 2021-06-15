@@ -1,14 +1,14 @@
-#' Retrieve a spatial layer from an ArcGIS REST API
+#' Retrieve a feature service layer from an ArcGIS REST API
 #'
-#' This function retrieves spatial layers present an ArcGIS
-#' REST services API located at.
+#' This function retrieves spatial layers present in Feature Service layers of
+#' an ArcGIS REST services API and returns them as an \code{sf} object
 #'
-#' This is the core function of this package. It retrieves spatial layers from
-#' an ArcGIS REST API designated by the URL. Additional querying features can
-#' be passed such as a SQL WHERE statement (\code{where} argument) as well as
-#' spatial queries or any other types of queries that the ArcGIS REST API
-#' accepts using \code{...}. However, for easier spatial querying see
-#' \code{\link{get_layers_by_spatial}}.
+#' This is one of the core functions of this package. It retrieves spatial
+#' layers from feature services of an ArcGIS REST API designated by the URL.
+#' Additional querying features can be passed such as a SQL WHERE statement
+#' (\code{where} argument) or spatial queries as well as any other types of
+#' queries that the ArcGIS REST API accepts (using \code{...}). However, for
+#' easier spatial querying see \code{\link{get_layers_by_spatial}}.
 #'
 #' All of the querying parameters are sent via a POST request to the URL, so
 #' if there are issues with passing additional parameters via \code{...}
@@ -32,15 +32,10 @@
 #' @examples
 #' \dontrun{
 #' # lava flows on Reykjanes (pr. 'rake-yah-ness') peninsula in Iceland
-#' base_url <- "https://arcgisserver.isor.is:6443/arcgis/rest/services"
-#' reykjanes_path <- "vi/uttekt_eldstodva_allt_2/MapServer/5"
-#' reykjanes_url <- paste(base_url, reykjanes_path, sep = "/")
-#' lava_flows <- get_spatial_layer(reykjanes_url)
-#' plot_layer(lava_flows, outline_poly = reykjanes)
-#' plot_layer(lava_flows, outline_poly = reykjanes) +
-#'   ggplot2::geom_sf(data = iceland_poly, fill = NA)
+#' lava_flows <- get_spatial_layer(reykjanes_lava_flow_url)
+#' plot_layer(lava_flows, outline_poly = reykjanes_poly)
+#' plot_layer(lava_flows, outline_poly = iceland_poly)
 #' }
-#'
 get_spatial_layer <- function(url,
                               out_fields = c("*"),
                               where = "1=1",
@@ -71,7 +66,6 @@ get_spatial_layer <- function(url,
            ")\ncould not be infered from server.")
     sf_type <- layer_info$geometryType
   }
-  # print(geomType)
   query_url <- paste(url, "query", sep="/")
   esri_features <- get_esri_features(query_url, out_fields, where, token, ...)
   simple_features <- esri2sfGeom(esri_features, sf_type)
@@ -214,4 +208,222 @@ esri2sfPolyline <- function(features) {
   }
   geoms <- sf::st_sfc(lapply(features, getGeometry))
   return(geoms)
+}
+
+#' Retrieve a map service layer from an ArcGIS REST API
+#'
+#' This function retrieves map service layers from an ArcGIS
+#' REST services API and returns them as a \code{RasterLayer} object
+#'
+#' This is one of the core functions of the package. It retrieves map service
+#' layers from an ArcGIS REST API designated by the URL. These layers require a
+#' bounding box to query the map layer, which is either taken from the
+#' \code{sf_object} argument or optionally can be passed via the \code{bbox}
+#' argument. Either \code{sf_object} or \code{bbox} are optional, but one of
+#' them must be present.
+#'
+#' All of the querying parameters are sent via a POST request to the URL, so
+#' if there are issues with passing additional parameters via \code{...}
+#' first determine how they fit into the POST request and make adjustments as
+#' needed. This syntax can be tricky if you're not used to it.
+#'
+#' @inheritParams get_raster_layer
+#'
+#' @return A "RasterLayer" object
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' wi_landcover<- get_map_layer(wi_landcover_url, wis_poly)
+#' plot_layer(wi_landcover, outline_poly = wis_poly)
+#' }
+get_map_layer <- function(url,
+                          sf_object = NULL,
+                          bbox = NULL,
+                          token = "",
+                          clip_raster = TRUE,
+                          format = "png",
+                          transparent = TRUE,
+                          add_legend = TRUE,
+                          ...) {
+  out <- get_raster_layer(
+    url = url,
+    sf_object = sf_object,
+    bbox = bbox,
+    token = token,
+    clip_raster = clip_raster,
+    format = format,
+    transparent = transparent,
+    export_type = "map",
+    add_legend = add_legend,
+    ...
+  )
+  return(out)
+}
+
+
+#' Retrieve an image service layer from an ArcGIS REST API
+#'
+#' This function retrieves image service layers from an ArcGIS
+#' REST services API and returns them as a \code{RasterStack} object
+#'
+#' This is one of the core functions of the package. It retrieves image service
+#' layers from an ArcGIS REST API designated by the URL. These layers require a
+#' bounding box to query the map layer, which is either taken from the
+#' \code{sf_object} argument or optionally can be passed via the \code{bbox}
+#' argument. Either \code{sf_object} or \code{bbox} are optional, but one of
+#' them must be present.
+#'
+#' All of the querying parameters are sent via a POST request to the URL, so
+#' if there are issues with passing additional parameters via \code{...}
+#' first determine how they fit into the POST request and make adjustments as
+#' needed. This syntax can be tricky if you're not used to it.
+#'
+#' @inheritParams get_raster_layer
+#'
+#' @return A "RasterStack" object
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' wi_leaf_off_layer <- get_image_layer(wi_leaf_off_url, wis_poly)
+#' plot_layer(wi_leaf_off_layer, outline_poly = wis_poly)
+#' }
+get_image_layer <- function(url,
+                            sf_object = NULL,
+                            bbox = NULL,
+                            token = "",
+                            clip_raster = TRUE,
+                            format = "png",
+                            transparent = TRUE,
+                            ...) {
+  out <- get_raster_layer(
+    url = url,
+    sf_object = sf_object,
+    bbox = bbox,
+    token = token,
+    clip_raster = clip_raster,
+    format = format,
+    transparent = transparent,
+    export_type = "image",
+    ...
+  )
+  return(out)
+}
+
+
+#' Pull a raster layer from a map service or image service layer of an ArcGIS
+#' REST API
+#'
+#' This is an internal function to pull raster layers from either a map service
+#' or an image service of an ArcGIS REST API. This function is the engine that
+#' drives \code{\link{get_map_layer}} and \code{\link{get_image_layer}}
+#'
+#' @param url A character string of the url for the layer to pull
+#' @param sf_object An \code{sf} object used for the bounding box
+#' @param bbox Character string of the bounding box
+#' @param token A character string of the token (if needed)
+#' @param clip_raster Logical. Should the raster be clipped to contain only
+#' the pixels that reside in the \code{sf_object}? By default, ArcGIS returns
+#' some overlapping edge pixels. Setting \code{clip_raster} to TRUE (default)
+#' will remove these using \code{\link[raster]{mask}} from the \code{raster}
+#' package
+#' @param format The raster format desired. Default is "png"
+#' @param transparent Logical. Retrieve a raster with a transparent background
+#' (TRUE, default) or not (FALSE)
+#' @param export_type Character. Either "map" or "image" for the respective
+#' service layer desired
+#' @param add_legend Logical. Pull legend and match to color values
+#' (TRUE, default) or not (FALSE)
+#' @param ... Additional arguments to pass to the ArcGIS REST API
+#'
+#' @return An object of type \code{RasterLayer} if \code{export_type = "map"} or
+#' an object of type \code{RasterStack} if \code{export_type = "image"}
+get_raster_layer <- function(url,
+                             sf_object = NULL,
+                             bbox = NULL,
+                             token = "",
+                             clip_raster = TRUE,
+                             format = "png",
+                             transparent = TRUE,
+                             export_type = "map",
+                             add_legend = FALSE,
+                             ...) {
+  if (is.null(sf_object) && is.null(bbox)) {
+    stop(
+      "You must specify either an sf_object to spatially query by ",
+      "or a bbox as a character string"
+    )
+  } else if (!is.null(sf_object) && !is.null(bbox)) {
+    stop(
+      "You must specify either an sf_object or a bbox, but may not specify both"
+    )
+  } else if (!is.null(sf_object)) {
+    bbox <- sf::st_bbox(sf_object)
+    bbox_coords <- paste(bbox, collapse = ", ")
+    bbox_sr <- get_sf_crs(sf_object)
+  }
+  if (export_type == "map") {
+    export_url <- paste(url, "export", sep = "/")
+  } else if (export_type == "image") {
+    if (add_legend) {
+      warning("You can only use add_legend with get_map_layer(). ",
+              "Setting add_legend to FALSE")
+    }
+    add_legend <- FALSE
+    export_url <- paste(url, "exportImage", sep = "/")
+  }
+  if (transparent) {
+    if (!(grepl("png|gif", format))) {
+      transparent <- FALSE
+      warning("Transparent background only available for png and gif formats")
+    }
+  }
+  response_raw <- httr::POST(
+    url = export_url,
+    body = list(
+      f = "json",
+      token = token,
+      bbox = bbox_coords,
+      bboxSR = bbox_sr,
+      imageSR = bbox_sr,
+      transparent = transparent,
+      format = format,
+      ...
+    )
+  )
+  response <- jsonlite::fromJSON(rawToChar(response_raw$content))
+  raster_url <- response$href
+  raster_extent <- raster::extent(unlist(response$extent[c(1, 3, 2, 4)]))
+  raster_crs <- raster::crs(sf_object)
+
+  # set the extent and projection of the raster layer
+  if (export_type == "map") {
+    out <- raster::raster(raster_url)
+    if (raster::nbands(out) > 1) {
+      out <- raster::stack(raster_url)
+    }
+  } else if (export_type == "image") {
+    out <- raster::stack(raster_url)
+  }
+  raster::extent(out) <- raster_extent
+  raster::projection(out) <- raster_crs
+
+  # read the raster into memory (as opposed to a connection)
+  out <- raster::readAll(out)
+
+  if (clip_raster) {
+    out <- raster::mask(out, sf_object)
+  }
+
+  if (add_legend) {
+    raster_cols <- raster::colortable(out)
+    legend <-
+      get_layer_legend(url) %>%
+      match_raster_colors(out) %>%
+      dplyr::arrange(color = match(.data$color, raster_cols[-1]))
+    out@legend@names <- c(NA, legend$value)
+  }
+
+  return(out)
 }

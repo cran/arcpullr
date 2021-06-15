@@ -59,6 +59,44 @@ format_envelope_coords <- function(sf_obj) {
 #' @rdname format_coords
 #' @param geom_type Either "points", "paths", or "rings". Choose wisely
 #' @export
+# format_coords <- function(sf_obj, geom_type) {
+#   geometry_type <- switch(
+#     geom_type,
+#     multipoint = "points",
+#     polyline = "paths",
+#     polygon = "rings"
+#   )
+#   left_bracket <- switch(
+#     geom_type,
+#     multipoint = "[",
+#     polyline = "[[",
+#     polygon = "[[")
+#   right_bracket <- switch(
+#     geom_type,
+#     multipoint = "",
+#     polyline = "]]",
+#     polygon = "]]")
+#
+#   geometry_type <- sprintf("'%s'", geometry_type)
+#   crs <- get_sf_crs(sf_obj)
+#   out <-
+#     sf_obj %>%
+#     sf::st_coordinates() %>%
+#     data.frame() %>%
+#     dplyr::select(.data$X, .data$Y) %>%
+#     tidyr::unite(col= "coordinates",sep = ",") %>%
+#     dplyr::mutate(coordinates = paste("[", .data$coordinates, "]",sep="")) %>%
+#     dplyr::summarise(coordinates =  paste(.data$coordinates,collapse = ",")) %>%
+#     dplyr::mutate(coordinates = paste("{", geometry_type, ":",left_bracket,
+#                                       .data$coordinates,
+#                                       right_bracket,
+#                                       ",'spatialReference':{'wkid':", crs,
+#                                       "}}", sep = "")) %>%
+#     dplyr::pull()
+#   return(out)
+# }
+
+
 format_coords <- function(sf_obj, geom_type) {
   geometry_type <- switch(
     geom_type,
@@ -66,33 +104,45 @@ format_coords <- function(sf_obj, geom_type) {
     polyline = "paths",
     polygon = "rings"
   )
-  left_bracket <- switch(
-    geom_type,
-    multipoint = "[",
-    polyline = "[[",
-    polygon = "[[")
-  right_bracket <- switch(
-    geom_type,
-    multipoint = "]",
-    polyline = "]]",
-    polygon = "]]")
+  left_bracket <- "["
+  right_bracket <- "]"
+  # left_bracket <- switch(
+  #   geom_type,
+  #   multipoint = "",
+  #   polyline = "[",
+  #   polygon = "[")
+  # right_bracket <- switch(
+  #   geom_type,
+  #   multipoint = "",
+  #   polyline = "]",
+  #   polygon = "]")
 
   geometry_type <- sprintf("'%s'", geometry_type)
   crs <- get_sf_crs(sf_obj)
+  out <- lapply(1:nrow(sf_obj), function(x) {
+    out <-
+      sf_obj[x, ] %>%
+      sf::st_coordinates() %>%
+      data.frame() %>%
+      dplyr::select(.data$X, .data$Y) %>%
+      tidyr::unite(col= "coordinates",sep = ",") %>%
+      dplyr::mutate(coordinates = paste0("[", .data$coordinates, "]")) %>%
+      dplyr::summarise(coordinates =  paste(.data$coordinates, collapse = ","))
+  }
+  )
   out <-
-    sf_obj %>%
-    sf::st_coordinates() %>%
-    data.frame() %>%
-    dplyr::select(.data$X, .data$Y) %>%
-    tidyr::unite(col= "coordinates",sep = ",") %>%
-    dplyr::mutate(coordinates = paste("[", .data$coordinates, "]",sep="")) %>%
-    dplyr::summarise(coordinates =  paste(.data$coordinates,collapse = ",")) %>%
-    dplyr::mutate(coordinates = paste("{", geometry_type, ":",left_bracket,
-                                      .data$coordinates,
-                                      right_bracket,
-                                      ",'spatialReference':{'wkid':", crs,
-                                      "}}", sep = "")) %>%
-    dplyr::pull()
+    do.call("rbind", out) %>%
+    dplyr::mutate(coordinates = dplyr::case_when(
+      geom_type == "multipoint" ~ .data$coordinates,
+      TRUE ~ paste0("[", .data$coordinates, "]")
+    )) %>%
+    dplyr::pull() %>%
+    paste(collapse = ", ")
+  out <-
+    paste("{", geometry_type, ":",
+          left_bracket, out, right_bracket,
+          ", 'spatialReference':{'wkid':", crs,
+          "}}", sep = "")
   return(out)
 }
 
@@ -105,7 +155,7 @@ format_coords <- function(sf_obj, geom_type) {
 #' @export
 #'
 #' @examples
-#' get_sf_crs(iceland)
+#' get_sf_crs(iceland_poly)
 get_sf_crs <- function(sf_obj) {
   stopifnot("sf" %in% class(sf_obj))
   out_crs <- as.numeric(gsub(".*([0-9]{4})$", "\\1",sf::st_crs(sf_obj)[[1]]))
@@ -126,9 +176,9 @@ get_sf_crs <- function(sf_obj) {
 #' @examples
 #' pt_a <- c(-90, 45)
 #' pt_b <- c(-89, 44)
-#' sf_pt <- sf_points(pt_a)
-#' sf_lines <- sf_lines(pt_a, pt_b)
-sf_lines <- function(..., crs = 4326) {
+#' pt <- sf_points(pt_a)
+#' line <- sf_line(pt_a, pt_b)
+sf_line <- function(..., crs = 4326) {
   coords <- do.call("rbind", list(...))
   ls <- sf::st_linestring(coords)
   sfc <- sf::st_sfc(ls, crs = crs)
@@ -235,4 +285,140 @@ sql_where <- function(..., rel_op = "=") {
   return(out)
 }
 
+#' Pull the HTML body from a web page
+#'
+#' Used internally to pull HTML for a layer's web page so that the call
+#' doesn't have to be made twice in \code{\link{get_geometry_type}} if the
+#' url provided there is for a raster layer.
+#'
+#' @param url Character. The URL of the web page
+#'
+#' @return A character string of the HTML body
+get_layer_html <- function(url) {
+  layer_html <-
+    xml2::read_html(url) %>%
+    rvest::html_nodes("body") %>%
+    rvest::html_text() %>%
+    stringr::str_replace("\\s+", " ")
+  return(layer_html)
+}
 
+
+#' Get Service Type of a REST endpoint
+#'
+#' @param url A character string of a valid layer URL
+#' @param ... Only used internally
+#'
+#' @return A character string defining the layer type
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' get_service_type(reykjanes_lava_flow_url)
+#' }
+get_service_type <- function(url, ...) {
+  if (!(requireNamespace("xml2", quietly = TRUE) ||
+        requireNamespace("rvest", quietly = TRUE))) {
+    stop(
+      "You must have xml2, rvest, and stringr installed ",
+      "to use get_service_type"
+    )
+  }
+  # check to see if html is passed; used for checking raster layer type
+  # in get_geometry_type
+  args <- list(...)
+  if ("html" %in% names(args)) {
+    geom_type <-
+      args$html %>%
+      stringr::str_match(base::paste0("Type:\\s+","(.*?) ")) %>%
+      stringr::str_replace("Type:", "") %>%
+      stringr::str_trim()
+    return(paste0(tolower(geom_type[2]), "_layer"))
+  } else if (httr::http_error(url) == TRUE) {
+    return("url_error")
+  } else {
+    geom_type <-
+      get_layer_html(url) %>%
+      stringr::str_match(base::paste0("Type:\\s+","(.*?) ")) %>%
+      stringr::str_replace("Type:", "") %>%
+      stringr::str_trim()
+    return(paste0(tolower(geom_type[2]), "_layer"))
+  }
+}
+
+#' Get Geometry Type
+#'
+#' This function will return the geometry type of feature service layers housed
+#' on an ArcGIS REST API server. If a URL is provided that points to a map or
+#' image layer the function will return an error.
+#'
+#' @param url A character string of a feature services URL
+#'
+#' @return A character string of the layers geometry type
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' get_geometry_type(reykjanes_lava_flow_url)
+#' }
+get_geometry_type <- function(url) {
+  if (!(requireNamespace("xml2", quietly = TRUE) ||
+        requireNamespace("rvest", quietly = TRUE))) {
+    stop(
+      "You must have xml2, rvest, and stringr installed ",
+      "to use get_geometry_type"
+    )
+  }
+  if (httr::http_error(url) == TRUE) {
+    "url_error"
+  } else {
+    layer_html <- get_layer_html(url)
+    service_type <- get_service_type(html = layer_html)
+    if (service_type != "feature_layer") {
+      stop("This is not a Feature Service layer. Geometry Type is only\n",
+           "  defined for Feature Service Layers.")
+    } else {
+      geom_type <-
+        layer_html %>%
+        stringr::str_match(base::paste0("Geometry Type: ","(.*?) ")) %>%
+        stringr::str_replace("Description:", "") %>%
+        stringr::str_trim()
+      return(geom_type[2])
+    }
+  }
+}
+
+get_raster_layers <- function(url) {
+  layer_html <- get_layer_html(url)
+}
+
+#' Check to see which spatial relation types are applicable to the feature
+#' classes being queried and the sf objects use do to a spatial query
+#'
+#' @param fc1 Character. The feature class type being queried. Available options
+#' are "point", "multipoint", "line", or "area".
+#' @param fc2 Character. The geometry type of the sf object used to do a spatial
+#' query. Available options are "point", "multipoint", "line", or "area".
+#' @param pull Logical. Pull the available options (TRUE) or print all columns
+#' of the sp_rel_valid data.frame for the appropriate fc1 and fc2
+#'
+#' @return Either a vector or filtered data.frame showing the appropriate
+#' sp_rels for the given feature classes
+#' @export
+#'
+#' @examples
+#' valid_sp_rel("line", "line")
+valid_sp_rel <- function(fc1, fc2, pull = TRUE) {
+  fc1 <- tolower(fc1)
+  fc2 <- tolower(fc2)
+  out <-
+    arcpullr::sp_rel_valid %>%
+    dplyr::filter(.data$feature_class == fc1, .data$query_feature_class == fc2)
+  if (nrow(out) == 0) {
+    stop("One of the supplied feature classes cannot be found.")
+  }
+  if (pull) {
+    out <- dplyr::pull(out, .data$sp_rel)
+  }
+  return(out)
+}
