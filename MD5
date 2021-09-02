@@ -1,4 +1,4 @@
-45fb95a8bafb5445656645c8f93f2fbd *DESCRIPTION
+d507b2bd11cec2f0573b013a3ea79797 *DESCRIPTION
 8475e3e05e10428f07f7888d10de97ff *NAMESPACE
 20e363d3ed99206ea4d9250fd34d54d5 *R/arcpullr-package.R
 89cf4b24de988d490a23f129376fc682 *R/data.R
@@ -6,10 +6,10 @@
 dad61abebd9016a16b006d1d724ab0a2 *R/plot_layers.R
 7118ec4d514ef83efed9f03c23970038 *R/process_raster.R
 4859cd971a46c37d578a13403eb14a13 *R/retrieve_layer_properties.R
-87bc28c7a94ce5aa6b8465b48e72b996 *R/retrieve_layers.R
+3bf9c4a787802177083c7b0ffce98505 *R/retrieve_layers.R
 772e1f7d5e8abd2d9c5a2ec5b0b7c412 *R/retrieve_layers_by_geometry.R
 fd5b75b997cc0c615c15a5bf575e0433 *R/url_objects.R
-2aa3c5532d60b79918337ef030b06eda *R/utilities.R
+f27b20fa7603ccf66111ca4dc7933e0f *R/utilities.R
 e4843bcd7a9a7afa87aa735d2e2da899 *build/vignette.rds
 3df27e89f07f5a0cd690e38bf4b99b92 *data/iceland_poly.rda
 0c6221426a4a14d01259a072286aaeca *data/mke_county.rda
@@ -26,14 +26,14 @@ ff0d24f44f8c12a24f21a8bfbd0355d9 *inst/doc/intro_to_arcpullr.Rmd
 b614f78c3d3ebb9abc6bf8ee828c5ac3 *man/figures/arcpullr_hex.png
 076a1977d090282f67eb450836762841 *man/figures/logo.png
 7145713d93f0075e9dc2b76576679df6 *man/format_coords.Rd
-4acd23e9328223d6a80f1c5327c56383 *man/get_geometry_type.Rd
+8d1f70a788156f170b1a13fa80261c22 *man/get_geometry_type.Rd
 d28839aec818c0084819eb30d0ce6c9c *man/get_image_layer.Rd
 7bd2690b7793a23160af4e1fd47d8c9d *man/get_layer_html.Rd
 3ef1bc40a28281ed32c9899784011358 *man/get_layer_legend.Rd
 0c553b51e57acbcc8109fc207847a926 *man/get_layers_by_spatial.Rd
 19a247f7503d35c862cb4a6caca95018 *man/get_map_layer.Rd
 14cddf6bc6fc69bfcaa55243c54d01d0 *man/get_raster_layer.Rd
-571f3dfe177f50ed866c4759b19fe720 *man/get_service_type.Rd
+b39123930731cd2fe2f62d32020a87ae *man/get_service_type.Rd
 fd0645fe80eeca9ecbfd9def28cd3aa7 *man/get_sf_crs.Rd
 d4698216772fa9b28ed75b82fa0a5384 *man/get_spatial_layer.Rd
 cf4b5ebee18263d79e410d168af8a1c1 *man/match_raster_colors.Rd
