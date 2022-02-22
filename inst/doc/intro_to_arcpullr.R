@@ -25,17 +25,6 @@ library(arcpullr)
 ## -----------------------------------------------------------------------------
 sql_where(ROW_WATERBODY_NAME = 'Wisconsin River', HYDROCODE = 7011)
 
-## ----eval = FALSE-------------------------------------------------------------
-#  # url <- some url from an ArcGIS REST API layer
-#  # sf_object <- some sf_object
-#  raster_layer<- get_map_layer(url,sf_object)
-
-## ----eval = FALSE-------------------------------------------------------------
-#  # url <- some url from an ArcGIS REST API layer
-#  # sf_object <- some sf_object
-#  image_layer<- get_image_layer(url,sf_object)
-#  
-
 ## ----warning = FALSE, echo = TRUE, eval = FALSE-------------------------------
 #  wdnr_base_url <- "https://dnrmaps.wi.gov/arcgis/rest/services/"
 #  wolf_zone_layer_url <- "DW_Map_Dynamic/EN_Hunting_Zones_WTM_Ext/MapServer/0"
