@@ -19,16 +19,28 @@ landcover_path <- "DW_Land_Cover/EN_Land_Cover2_Lev2/MapServer"
 landcover_url <- paste0(image_server, landcover_path)
 
 # WI Leaf-off Aerial Imagery URL
-leaf_off_path <- "DW_Image/EN_Image_Basemap_Leaf_Off/ImageServer"
-leaf_off_url <- paste0(image_server, leaf_off_path)
+wi_leaf_off_path <- "DW_Image/EN_Image_Basemap_Leaf_Off/ImageServer"
+wi_aerial_imagery_url <- paste0(image_server, wi_leaf_off_path)
 
 # the wis_poly polygon is available as an exported object in arcpullr
 
-## ---- map_layer, fig.height = 7, fig.width = 7--------------------------------
-wi_landcover <- get_map_layer(landcover_url, wis_poly)
+## ----map_layer, eval = FALSE, echo = FALSE------------------------------------
+#  wi_landcover <- get_map_layer(landcover_url, wis_poly)
+
+## ----show_map_plotting, ref.label=c('map_layer', 'plot_map_layer'), eval = FALSE----
+#  wi_landcover <- get_map_layer(landcover_url, wis_poly)
+#  plot_layer(wi_landcover)
+
+## ----plot_map_layer, fig.height = 7, fig.width = 7, echo = FALSE--------------
 plot_layer(wi_landcover)
 
-## ---- image_layer, fig.height = 7, fig.width = 7------------------------------
-wi_leaf_off <- get_image_layer(leaf_off_url, wis_poly)
-plot_layer(wi_leaf_off)
+## ---- image_layer, eval = FALSE, echo = FALSE---------------------------------
+#  wi_aerial_imagery <- get_image_layer(wi_aerial_imagery_url, wis_poly)
+
+## ----show_map_plotting, ref.label=c("image_layer", "plot_image_layer"), eval = FALSE----
+#  wi_aerial_imagery <- get_image_layer(wi_aerial_imagery_url, wis_poly)
+#  plot_layer(wi_aerial_imagery)
+
+## ---- plot_image_layer, fig.height = 7, fig.width = 7, echo = FALSE-----------
+plot_layer(wi_aerial_imagery)
 
