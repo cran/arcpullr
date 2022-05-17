@@ -159,10 +159,10 @@ plot_layer(cook_creek_env, cook_creek_ws) +
 plot_layer(poly_streams_contains, outline_poly = example_poly)
 
 ## ----pull_sp_rel_crosses, eval = FALSE, echo = FALSE--------------------------
-#  poly_streams_crosses <- get_layer_by_poly(river_url, example_poly, sp_rel = "esriSpatialRelCrosses")
+#  poly_streams_crosses <- get_layer_by_poly(river_url, example_poly, sp_rel = "crosses")
 
 ## ----show_sp_rel_crosses, ref.label=c("pull_sp_rel_crosses", "plot_sp_rel_crosses"), eval = FALSE----
-#  poly_streams_crosses <- get_layer_by_poly(river_url, example_poly, sp_rel = "esriSpatialRelCrosses")
+#  poly_streams_crosses <- get_layer_by_poly(river_url, example_poly, sp_rel = "crosses")
 #  plot_layer(poly_streams_crosses, outline_poly = example_poly)
 
 ## ----plot_sp_rel_crosses, echo = FALSE----------------------------------------

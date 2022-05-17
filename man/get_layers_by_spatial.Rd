@@ -10,27 +10,22 @@
 \alias{get_layer_by_spatial}
 \title{Retrieve ArcGIS REST API spatial layer by spatial query}
 \usage{
-get_layer_by_poly(url, geometry, sp_rel = "esriSpatialRelContains", ...)
+get_layer_by_poly(url, geometry, sp_rel = "contains", ...)
 
-get_layer_by_line(url, geometry, sp_rel = "esriSpatialRelIntersects", ...)
+get_layer_by_line(url, geometry, sp_rel = "intersects", ...)
 
-get_layer_by_point(url, geometry, sp_rel = "esriSpatialRelIntersects", ...)
+get_layer_by_point(url, geometry, sp_rel = "intersects", ...)
 
-get_layer_by_multipoint(
-  url,
-  geometry,
-  sp_rel = "esriSpatialRelIntersects",
-  ...
-)
+get_layer_by_multipoint(url, geometry, sp_rel = "intersects", ...)
 
-get_layer_by_envelope(url, geometry, sp_rel = "esriSpatialRelIntersects", ...)
+get_layer_by_envelope(url, geometry, sp_rel = "intersects", ...)
 
 get_layer_by_spatial(
   url,
   geometry,
   geom_type,
   sp_ref = NULL,
-  sp_rel = "esriSpatialRelIntersects",
+  sp_rel = "intersects",
   ...
 )
 }
@@ -39,7 +34,8 @@ get_layer_by_spatial(
 
 \item{geometry}{An \code{sf} object used for the spatial query}
 
-\item{sp_rel}{Character. The type of relationship to query by.}
+\item{sp_rel}{Character. The type of relationship to query by. Possible
+options include "intersects", "contains", and "crosses"}
 
 \item{...}{Additional arguements to pass to \code{\link{get_spatial_layer}}}
 
