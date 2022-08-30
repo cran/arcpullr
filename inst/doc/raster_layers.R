@@ -8,7 +8,7 @@ library(arcpullr)
 library(sf)
 
 ## ---- echo = FALSE------------------------------------------------------------
-#<img src='../man/figures/logo.png' width="160" height="180" style="border: none" align="right"/>
+#
 
 ## -----------------------------------------------------------------------------
 # WDNR Server
@@ -41,6 +41,6 @@ plot_layer(wi_landcover)
 #  wi_aerial_imagery <- get_image_layer(wi_aerial_imagery_url, wis_poly)
 #  plot_layer(wi_aerial_imagery)
 
-## ---- plot_image_layer, fig.height = 7, fig.width = 7, echo = FALSE-----------
+## ---- plot_image_layer, fig.height = 5, fig.width = 5, echo = FALSE-----------
 plot_layer(wi_aerial_imagery)
 
