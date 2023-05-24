@@ -8,7 +8,7 @@ library(arcpullr)
 library(sf)
 
 ## ---- echo = FALSE------------------------------------------------------------
-#
+#<img src='../man/figures/logo.png' width="160" height="180" style="border: none; float: right"/>
 
 ## -----------------------------------------------------------------------------
 # WDNR Server

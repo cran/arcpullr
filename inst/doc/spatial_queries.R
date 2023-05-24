@@ -10,7 +10,7 @@ library(sf)
 sf::sf_use_s2(FALSE)
 
 ## ---- echo = FALSE------------------------------------------------------------
-#
+#<img src='../man/figures/logo.png' width="160" height="180" style="border: none; float: right"/>
 
 ## ----url_setup, eval = FALSE--------------------------------------------------
 #  
