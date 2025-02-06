@@ -48,7 +48,31 @@
 #'
 #' @aliases arcpullr
 #'
-#' @docType package
-#' @name arcpullr-package
+#' @keywords internal
+"_PACKAGE"
+
+
+#' @import sf
 NULL
-#' NULL
+
+#' @import purrr
+NULL
+
+#' @import terra
+NULL
+
+#' @importFrom rlang .data
+NULL
+
+#' @importFrom DT datatable
+NULL
+
+#' @importFrom utils download.file
+NULL
+
+#' @importFrom grDevices col2rgb
+NULL
+
+#' @importFrom stats setNames
+NULL
+

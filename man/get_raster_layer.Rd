@@ -50,8 +50,7 @@ service layer desired}
 \item{...}{Additional arguments to pass to the ArcGIS REST API}
 }
 \value{
-An object of type \code{RasterLayer} if \code{export_type = "map"} or
-an object of type \code{RasterStack} if \code{export_type = "image"}
+An object of type \code{SpatRaster}
 }
 \description{
 This is an internal function to pull raster layers from either a map service
