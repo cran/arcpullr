@@ -1,7 +1,7 @@
 Package: arcpullr
 Type: Package
 Title: Pull Data from an 'ArcGIS REST' API
-Version: 0.3.0
+Version: 0.3.2
 Authors@R: c(person(given = "Paul",
            family = "Frater",
            role = c("aut", "cre"),
@@ -31,9 +31,9 @@ Suggests: testthat (>= 3.0.1), knitr (>= 1.30), rmarkdown (>= 2.6),
         (>= 1.1.1), magick (>= 2.5.2)
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-02-06 19:11:53 UTC; paul
-Author: Paul Frater [aut, cre] (<https://orcid.org/0000-0002-7237-6563>),
-  Zac Driscoll [aut] (<https://orcid.org/0000-0002-8233-0980>)
+Packaged: 2025-12-11 17:28:06 UTC; fratepnd
+Author: Paul Frater [aut, cre] (ORCID: <https://orcid.org/0000-0002-7237-6563>),
+  Zac Driscoll [aut] (ORCID: <https://orcid.org/0000-0002-8233-0980>)
 Maintainer: Paul Frater <paul.frater@wisconsin.gov>
 Repository: CRAN
-Date/Publication: 2025-02-06 19:40:05 UTC
+Date/Publication: 2025-12-12 07:11:04 UTC

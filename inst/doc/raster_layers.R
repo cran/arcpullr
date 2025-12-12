@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -16,7 +16,7 @@ wi_landcover_legend <-
 attr(wi_landcover, "legend") <- wi_landcover_legend
 wi_aerial_imagery <- terra::rast(system.file("wi_aerial_imagery.png", package = "arcpullr"))
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 #<img src='../man/figures/logo.png' width="160" height="180" style="border: none; float: right"/>
 
 ## -----------------------------------------------------------------------------
@@ -34,18 +34,18 @@ wi_aerial_imagery_url <- paste0(image_server, wi_leaf_off_path)
 # the wis_poly polygon is available as an exported object in arcpullr
 
 ## ----map_layer, eval = FALSE, echo = FALSE------------------------------------
-#  wi_landcover <- get_map_layer(landcover_url, wis_poly)
+# wi_landcover <- get_map_layer(landcover_url, wis_poly)
 
 ## ----show_map_plotting, ref.label=c('map_layer', 'plot_map_layer'), eval = FALSE----
-#  wi_landcover <- get_map_layer(landcover_url, wis_poly)
-#  plot_layer(wi_landcover)
+# wi_landcover <- get_map_layer(landcover_url, wis_poly)
+# plot_layer(wi_landcover)
 
 ## ----plot_map_layer, fig.height = 7, fig.width = 7, echo = FALSE--------------
 plot_layer(wi_landcover)
 
-## ---- image_layer, eval = FALSE, echo = FALSE---------------------------------
-#  wi_aerial_imagery <- get_image_layer(wi_aerial_imagery_url, wis_poly)
+## ----image_layer, eval = FALSE, echo = FALSE----------------------------------
+# wi_aerial_imagery <- get_image_layer(wi_aerial_imagery_url, wis_poly)
 
-## ---- plot_image_layer, fig.height = 5, fig.width = 5, echo = FALSE-----------
+## ----plot_image_layer, fig.height = 5, fig.width = 5, echo = FALSE------------
 plot_layer(wi_aerial_imagery)
 
