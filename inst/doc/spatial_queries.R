@@ -169,11 +169,11 @@ plot_layer(poly_streams_contains, outline_poly = example_poly)
 plot_layer(poly_streams_crosses, outline_poly = example_poly)
 
 ## ----echo = FALSE-------------------------------------------------------------
-sp_rel_lookup %>%
+sp_rel_lookup |>
   DT::datatable()
 
 ## ----echo = FALSE-------------------------------------------------------------
-sp_rel_valid %>%
+sp_rel_valid |>
   DT::datatable()
 
 

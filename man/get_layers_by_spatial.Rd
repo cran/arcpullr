@@ -10,7 +10,7 @@
 \alias{get_layer_by_spatial}
 \title{Retrieve ArcGIS REST API spatial layer by spatial query}
 \usage{
-get_layer_by_poly(url, geometry, sp_rel = "contains", ...)
+get_layer_by_poly(url, geometry, sp_rel = "intersects", clip_layer = TRUE, ...)
 
 get_layer_by_line(url, geometry, sp_rel = "intersects", ...)
 
@@ -37,7 +37,12 @@ get_layer_by_spatial(
 \item{sp_rel}{Character. The type of relationship to query by. Possible
 options include "intersects", "contains", and "crosses"}
 
-\item{...}{Additional arguements to pass to \code{\link{get_spatial_layer}}}
+\item{clip_layer}{Logical. Currently only available for
+\code{get_layer_by_poly}. Should the polygon be "clipped" to what is in
+\code{geometry} using \code{\link[sf]{st_intersection}} (TRUE, default) or
+not (FALSE)}
+
+\item{...}{Additional arguments to pass to \code{\link{get_spatial_layer}}}
 
 \item{geom_type}{A character of the geometry type to be used. This param is
 automatically specified in all \code{get_layer_by_*} functions except

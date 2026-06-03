@@ -62,11 +62,65 @@ get_spatial_layer <- function(url,
     sf_type <- layer_info$geometryType
   }
   query_url <- paste(url, "query", sep="/")
-  args <- list(query_url, out_fields, where, token, head, ...)
+  dots <- list(...)
+  if ("outSR" %in% names(dots)) {
+    args <- list(query_url, out_fields, where, token, head, ...)
+    out_sr <- dots[["outSR"]]
+  } else {
+    args <- list(query_url, out_fields, where, token, head, outSR = "4326", ...)
+    out_sr <- 4326
+  }
   if(!"idsplits" %in% names(args))
     args <- c(args, list(idsplits = layer_info$maxRecordCount))
   esri_features <- do.call(get_esri_features, args)
-  simple_features <- esri2sfGeom(esri_features, sf_type)
+  simple_features <- esri2sfGeom(esri_features, sf_type, out_sr)
+  return(simple_features)
+}
+
+export_map <- function(url,
+                       bbox = NULL,
+                       sf_object = NULL,
+                       out_fields = c("*"),
+                       where = "1=1",
+                       token = "",
+                       sf_type = NULL,
+                       head = FALSE,
+                       ...) {
+  layer_info <- get_layer_info(url, token)
+  query_url <- paste(url, "export", sep="/")
+  dots <- list(...)
+  if ("outSR" %in% names(dots)) {
+    args <- list(query_url, out_fields, where, token, head, ...)
+    out_sr <- dots[["outSR"]]
+  } else {
+    args <- list(query_url, out_fields, where, token, head, outSR = "4326", ...)
+    out_sr <- 4326
+  }
+  # for the Export Map operation, a bbox needs to be specified
+  # the query then returns a url that can be used as a link to create a raster
+  # I was able to query LF_DML/AGOL_LF_DNR_MGD_PROP_WTM_Ext/MapServer/
+  # with the below
+  query <- list(
+    token=token,
+    bbox = "340267.31044722436,256534.4573347212,712971.0847780765,589044.6873749912",
+    f="json",
+    ...
+  )
+  response_raw <- httr::content(
+    httr::POST(
+      query_url,
+      body=query,
+      encode="form",
+      config = httr::config(ssl_verifypeer = FALSE)
+    ),
+    as="text"
+  )
+  response <- jsonlite::fromJSON(response_raw,
+                                 simplifyDataFrame = FALSE,
+                                 simplifyVector = FALSE,
+                                 digits=NA)
+  esri_json_features <- response$features
+  simple_features <- esri2sfGeom(esri_json_features, sf_type, out_sr)
   return(simple_features)
 }
 
@@ -148,7 +202,7 @@ get_layer_info <- function(url, token = "") {
 }
 
 get_esri_features <- function(query_url, fields, where, token='', head, ...) {
-  ids <- get_object_ids(query_url, where, token, ...)
+  ids <- get_object_ids(query_url, where, token, head, ...)
   if(is.null(ids)){
     warning("No records match the search critera")
     return()
@@ -177,15 +231,38 @@ get_esri_features <- function(query_url, fields, where, token='', head, ...) {
   return(merged)
 }
 
-get_object_ids <- function(query_url, where, token='', ...){
-  # create Simple Features from ArcGIS servers json response
-  query <- list(
-    where=where,
-    returnIdsOnly="true",
-    token=token,
-    f="json",
-    ...
-  )
+get_object_ids <- function(query_url, where, token='', head, ...){
+  if (isTRUE(head)) {
+    query <- list(
+      where=where,
+      returnIdsOnly="true",
+      returnGeometry="false",
+      resultOffset=0,
+      resultRecordCount=5,
+      token=token,
+      f="json",
+      ...
+    )
+  } else if (is.numeric(head) & head > 0) {
+    query <- list(
+      where=where,
+      returnIdsOnly="true",
+      returnGeometry="false",
+      resultOffset=0,
+      resultRecordCount=head,
+      token=token,
+      f="json",
+      ...
+    )
+  } else {
+    query <- list(
+      where=where,
+      returnIdsOnly="true",
+      token=token,
+      f="json",
+      ...
+    )
+  }
   response_raw <- httr::content(
     httr::POST(
       query_url,
@@ -198,13 +275,11 @@ get_object_ids <- function(query_url, where, token='', ...){
   return(response$objectIds)
 }
 
-get_esri_features_by_id <- function(ids, query_url, fields, token='', ...){
-  # create Simple Features from ArcGIS servers json response
+get_esri_features_by_id <- function(ids, query_url, fields, token='', ...) {
   query <- list(
     objectIds=paste(ids, collapse=","),
     outFields=paste(fields, collapse=","),
     token=token,
-    outSR='4326',
     f="json",
     ...
   )
@@ -225,7 +300,7 @@ get_esri_features_by_id <- function(ids, query_url, fields, token='', ...){
   return(esri_json_features)
 }
 
-esri2sfGeom <- function(jsonFeats, sf_type) {
+esri2sfGeom <- function(jsonFeats, sf_type, out_sr) {
   # convert esri json to simple feature
   if (sf_type == 'esriGeometryPolygon') {
     geoms <- esri2sfPolygon(jsonFeats)
@@ -253,7 +328,8 @@ esri2sfGeom <- function(jsonFeats, sf_type) {
     )
   )
   # geometry + attributes
-  df <- sf::st_sf(geoms, af, crs="+init=epsg:4326")
+  df <- sf::st_sf(geoms, af, crs=out_sr)
+  # df <- sf::st_sf(geoms, af, crs="+init=epsg:4326")
   return(df)
 }
 
@@ -439,16 +515,16 @@ get_image_layer <- function(url,
 #'
 #' @return An object of type \code{SpatRaster}
 get_raster_layer <- function(url,
-                                 sf_object = NULL,
-                                 bbox = NULL,
-                                 bbox_crs = NULL,
-                                 token = "",
-                                 clip_raster = TRUE,
-                                 format = "png",
-                                 transparent = TRUE,
-                                 export_type = "map",
-                                 add_legend = FALSE,
-                                 ...) {
+                             sf_object = NULL,
+                             bbox = NULL,
+                             bbox_crs = NULL,
+                             token = "",
+                             clip_raster = TRUE,
+                             format = "png",
+                             transparent = TRUE,
+                             export_type = "map",
+                             add_legend = FALSE,
+                             ...) {
   if (is.null(sf_object) && is.null(bbox)) {
     stop(
       "You must specify either an sf_object to spatially query by ",
@@ -501,17 +577,15 @@ get_raster_layer <- function(url,
   )
   response <- jsonlite::fromJSON(rawToChar(response_raw$content))
   raster_url <- response$href
-  raster_extent <- terra::ext(unlist(response$extent[c(1, 3, 2, 4)]))
+  raster_extent <- terra::ext(unlist(response$extent[c("xmin", "xmax", "ymin", "ymax")]))
   raster_crs <- terra::crs(sf_object)
-
   out <- suppressWarnings(terra::rast(raster_url))
   terra::ext(out) <- raster_extent
   terra::crs(out) <- raster_crs
-
+  out <- terra::flip(out)
   if (clip_raster) {
-    out <- terra::crop(out, sf_object)
+    out <- terra::crop(out, sf_object, mask = TRUE)
   }
-
   if (add_legend) {
     raster_cols <- terra::coltab(out)[[1]]
     legend <-
@@ -520,7 +594,6 @@ get_raster_layer <- function(url,
       dplyr::arrange(.data$value)
     attr(out, "legend") <- legend
   }
-
-  return(terra::flip(out))
+  return(out)
 }
 

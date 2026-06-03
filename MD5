@@ -1,4 +1,4 @@
-88c093d592f6f8967e9d0fcc33911de6 *DESCRIPTION
+be756c3a74bc42c19574f19d15a2b2d7 *DESCRIPTION
 8bb1ba16f3d72bcc3fd1749bdb46b142 *NAMESPACE
 d574a15b6a13667b0764eb08c4dcc740 *R/arcpullr-package.R
 af00f26345dba3f5e8873313eeec44c8 *R/data.R
@@ -6,8 +6,8 @@ d41d8cd98f00b204e9800998ecf8427e *R/imports.R
 45750c2b250e3ab3bd78e4d0a8b7a9f5 *R/plot_layers.R
 ea6f0a088fa7d04cd4da8518154741d3 *R/process_raster.R
 e4147bf640368444fbdc9d19eeed0be4 *R/retrieve_layer_properties.R
-e557961183e51aa41a9abc05dab21759 *R/retrieve_layers.R
-c88df130fcc5bfa1becdd35db2b761e4 *R/retrieve_layers_by_geometry.R
+ef38eb3540347f448fb96e0b61af3e50 *R/retrieve_layers.R
+a30787f51148c49b62d8c5d3b30978ff *R/retrieve_layers_by_geometry.R
 c757277f711cc8f702e50428b2743118 *R/sysdata.rda
 cb18aa92f185d3ba65340fd2cd180fab *R/url_objects.R
 dce38676e64fd415d5ab5f4b2224e223 *R/utilities.R
@@ -34,13 +34,13 @@ bdd3381a70c37e7c3c24604224df5251 *data/trout_hab_project_pts.rda
 249a5de5909bc22e95c487a2d87a7d70 *data/wis_poly.rda
 6552dec85f2fc292271d75985ff3c22d *inst/doc/intro_to_arcpullr.R
 daebbd8f4963b436180ab4f30e2e30d5 *inst/doc/intro_to_arcpullr.Rmd
-6ed03cb459e3e8a52641cc47494a0504 *inst/doc/intro_to_arcpullr.html
+0adadf4c6d23d2a4bf1fa5d084899355 *inst/doc/intro_to_arcpullr.html
 544b50588fd67321795327b02a25e3f9 *inst/doc/raster_layers.R
 589daf341da0b3f5b9e3768b4b511f86 *inst/doc/raster_layers.Rmd
-1838c601947d554b8a370d793ed7409a *inst/doc/raster_layers.html
-7b9b8b04b2367c4c59895d20ee10824e *inst/doc/spatial_queries.R
-441ad5e13b703b94b9cbab864013a7d0 *inst/doc/spatial_queries.Rmd
-b8e46cef36bd3f87f903d977c0cd2193 *inst/doc/spatial_queries.html
+df156cdb1f843b53e94a8db3e747f618 *inst/doc/raster_layers.html
+e4b800836c42695efa3835599e1a9834 *inst/doc/spatial_queries.R
+67ede5e95a0b98430de76ed920575c0d *inst/doc/spatial_queries.Rmd
+a7969928b50cf4e94b8f01e0583773fe *inst/doc/spatial_queries.html
 334b34a9d63fa774ec1b413d911ff138 *inst/wi_aerial_imagery.png
 7fa09b307622528ee89584a7220a95e4 *inst/wi_aerial_imagery.png.aux.xml
 d2dd024eac85a886001f975623133c9a *inst/wi_landcover.png
@@ -55,7 +55,7 @@ ee307bd0357ab62eb429ada04c926c92 *man/arcpullr-package.Rd
 7bd2690b7793a23160af4e1fd47d8c9d *man/get_layer_html.Rd
 1b2aa5d76a22ae15449988ebd1ed49db *man/get_layer_info.Rd
 3ef1bc40a28281ed32c9899784011358 *man/get_layer_legend.Rd
-b0f315e70a902f68baef2a7a683c1511 *man/get_layers_by_spatial.Rd
+f4d06822c84c025dc04a0952f9504ba8 *man/get_layers_by_spatial.Rd
 ce8c0ef4d9afbb959de30bf9121ca0ea *man/get_map_layer.Rd
 76305191944282425830bffdf471c7c3 *man/get_raster_layer.Rd
 b39123930731cd2fe2f62d32020a87ae *man/get_service_type.Rd
@@ -87,4 +87,4 @@ e80c1e7e777c522504d8f537f4187ea8 *tests/testthat/test_format_spatial_coords.R
 bca4b6d09f57516f84312ed8ddbf3bce *tests/testthat/test_utilities.R
 daebbd8f4963b436180ab4f30e2e30d5 *vignettes/intro_to_arcpullr.Rmd
 589daf341da0b3f5b9e3768b4b511f86 *vignettes/raster_layers.Rmd
-441ad5e13b703b94b9cbab864013a7d0 *vignettes/spatial_queries.Rmd
+67ede5e95a0b98430de76ed920575c0d *vignettes/spatial_queries.Rmd

@@ -13,7 +13,11 @@
 #' @param sp_ref The spatial reference value
 #' @param sp_rel Character. The type of relationship to query by. Possible
 #' options include "intersects", "contains", and "crosses"
-#' @param ... Additional arguements to pass to \code{\link{get_spatial_layer}}
+#' @param clip_layer Logical. Currently only available for
+#' \code{get_layer_by_poly}. Should the polygon be "clipped" to what is in
+#' \code{geometry} using \code{\link[sf]{st_intersection}} (TRUE, default) or
+#' not (FALSE)
+#' @param ... Additional arguments to pass to \code{\link{get_spatial_layer}}
 #'
 #' @return An object of class "sf" of the appropriate layer
 #' @export
@@ -25,7 +29,8 @@
 #'   mke_waters <- get_layer_by_poly(wi_hydro_url, mke_county)
 #' }
 get_layer_by_poly <- function(url, geometry,
-                              sp_rel = "contains",
+                              sp_rel = "intersects",
+                              clip_layer = TRUE,
                               ...) {
   if (!all(sf::st_is_valid(geometry))) {
     cat(
@@ -42,11 +47,35 @@ get_layer_by_poly <- function(url, geometry,
       )
     }
   }
-  return(get_layer_by_spatial(url = url,
-                              geometry = format_polygon_coords(geometry),
-                              geom_type = "esriGeometryPolygon",
-                              sp_ref = get_sf_crs(geometry),
-                              sp_rel = sp_rel_xref(sp_rel), ...))
+  out <- get_layer_by_spatial(
+    url = url,
+    geometry = format_polygon_coords(geometry),
+    geom_type = "esriGeometryPolygon",
+    sp_ref = get_sf_crs(geometry),
+    sp_rel = sp_rel_xref(sp_rel),
+    ...
+  )
+  if (clip_layer) {
+    temp <- tryCatch(
+      out |>
+        sf::st_make_valid() |>
+        sf::st_intersection(geometry) |>
+        suppressMessages(),
+      error = function(e) return(NULL)
+    )
+    if (is.null(temp) & sf::sf_use_s2()) {
+      warning("clip_layer failed. Trying again with sf::sf_use_s2(FALSE)\n")
+      sf::sf_use_s2(FALSE)
+      out <-
+        out |>
+        sf::st_make_valid() |>
+        sf::st_intersection(geometry)
+      sf::sf_use_s2(TRUE)
+    } else {
+      out <- temp
+    }
+  }
+  return(out)
 }
 
 #' @name get_layers_by_spatial

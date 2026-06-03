@@ -307,7 +307,7 @@ The `sp_rel_lookup` data.frame explains the various types of
 spatial relationships available through ArcGIS REST APIs.
 
 ```{r, echo = FALSE}
-sp_rel_lookup %>%
+sp_rel_lookup |>
   DT::datatable()
 ```
 <br>
@@ -316,7 +316,7 @@ valid with different geometry types being queried and used to do spatial
 queries.
 
 ```{r, echo = FALSE}
-sp_rel_valid %>%
+sp_rel_valid |>
   DT::datatable()
 
 ```
